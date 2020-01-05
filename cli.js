@@ -2,6 +2,8 @@
 
 'use strict';
 
+const path = require('path');
+const fs = require('fs');
 const prompt = require('prompt');
 const auth = require('./util/get_auth');
 const settings = require('./package.json');
@@ -33,41 +35,15 @@ class Hecate {
 
         this.auth_rules = api.auth_rules ? api.auth_rules : null;
 
-        // Instantiate New Library Instances
-        this._ = {
-            auth: new (require('./lib/auth'))(this),
-            bbox: new (require('./lib/bbox'))(this),
-            webhooks: new (require('./lib/webhooks'))(this),
-            tiles: new (require('./lib/tiles'))(this),
-            clone: new (require('./lib/clone'))(this),
-            bounds: new (require('./lib/bounds'))(this),
-            feature: new (require('./lib/feature'))(this),
-            deltas: new (require('./lib/deltas'))(this),
-            user: new (require('./lib/user'))(this),
-            schema: new (require('./lib/schema'))(this),
-            server: new (require('./lib/server'))(this),
-            import: new (require('./lib/import'))(this),
-            revert: new (require('./lib/revert'))(this)
-        };
+        // Dynamically load all API modules
+        const mods = fs.readdirSync(path.resolve(__dirname, './lib/'));
 
-        // Add Helper Functions
-        this.auth = (...opts) => this._.auth.get(...opts);
-        this.clone = (...opts) => this._.clone.get(...opts);
-        this.server = (...opts) => this._.server.get(...opts);
-        this.bbox = (...opts) => this._.bbox.get(...opts);
-        this.listDeltas = (...opts) => this._.deltas.list(...opts);
-        this.getDelta = (...opts) => this._.deltas.get(...opts);
-        this.listBounds = (...opts) => this._.bounds.list(...opts);
-        this.setBound = (...opts) => this._.bounds.set(...opts);
-        this.getBound = (...opts) => this._.bounds.get(...opts);
-        this.getBoundMeta = (...opts) => this._.bounds.meta(...opts);
-        this.register = (...opts) => this._.user.register(...opts);
-        this.schema = (...opts) => this._.schema.get(...opts);
-        this.import = (...opts) => this._.import.multi(...opts);
-        this.revert = (...opts) => this._.revert.revert(...opts);
-        this.getFeatureHistory = (...opts) => this._.feature.history(...opts);
-        this.getFeatureKey = (...opts) => this._.feature.key(...opts);
-        this.getFeature = (...opts) => this._.feature.get(...opts);
+        for (let mod of mods) {
+            mod = require('./lib/' + mod);
+            const name = mod.name.toLowerCase();
+
+            this[name] = new mod(this);
+        }
     }
 }
 
@@ -117,18 +93,18 @@ if (require.main === module) {
         const command = argv._[2];
         const subcommand = argv._[3];
 
-        if (command && !hecate._[command]) {
+        if (command && !hecate[command]) {
             console.error();
             console.error(`"${command}" command not found!`);
             console.error();
             process.exit(1);
-        } else if (command && subcommand && !hecate._[command][subcommand]) {
+        } else if (command && subcommand && !hecate[command][subcommand]) {
             console.error();
             console.error(`"${command} ${subcommand}" command not found!`);
             console.error();
             process.exit(1);
         } else if (argv.help || !subcommand) {
-            return hecate._[command].help();
+            return hecate[command].help();
         }
 
         if (!argv.script) {
@@ -151,7 +127,7 @@ if (require.main === module) {
                 // if a custom auth policy hasn't been passed
                 if (!hecate.auth_rules) {
                     // fetch auth
-                    hecate.auth({}, (err, auth_rules) => {
+                    hecate.auth.get({}, (err, auth_rules) => {
                         // if requesting auth returns a 401
                         if (err && err.message === '401: Unauthorized') {
                             // if username and password isn't set, prompt for it
@@ -163,7 +139,7 @@ if (require.main === module) {
                                         password: res.hecate_password
                                     };
                                     // request auth again
-                                    hecate.auth({}, (err, auth_rules) => {
+                                    hecate.auth.get({}, (err, auth_rules) => {
                                         if (err) throw err;
                                         hecate.auth_rules = auth_rules;
                                         return run();
@@ -193,7 +169,7 @@ if (require.main === module) {
             if (!subcommand) {
                 hecate[command](argv);
             } else {
-                hecate._[command][subcommand](argv);
+                hecate[command][subcommand](argv);
             }
         }
     };
