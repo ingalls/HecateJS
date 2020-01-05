@@ -25,7 +25,7 @@ test('Basic Import Test', (t) => {
             JSON.parse(fs.readFileSync(path.resolve(__dirname, './fixtures/valid-geojson.schema')))
         );
 
-    hecate._.import.multi({
+    hecate.import.multi({
         input: fs.createReadStream(path.resolve(__dirname, './fixtures/valid-geojson.json')),
         message: 'Test Import',
         dryrun: true

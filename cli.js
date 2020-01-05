@@ -23,17 +23,18 @@ class Hecate {
      *                              The CLI will automatically attempt to populate this value
      */
     constructor(api = {}) {
-        this.url = api.url ? new URL(api.url).toString() : 'http://localhost:8000';
-        this.user = false;
+        this._ = {
+            user: false,
+            url: api.url ? new URL(api.url).toString() : 'http://localhost:8000',
+            auth_rules: api.auth_rules ? api.auth_rules : null
+        };
 
         if ((api.username || process.env.HECATE_USERNAME) && (api.password || process.env.HECATE_PASSWORD)) {
-            this.user = {
+            this._.user = {
                 username: api.username ? api.username : process.env.HECATE_USERNAME,
                 password: api.password ? api.password : process.env.HECATE_PASSWORD
             };
         }
-
-        this.auth_rules = api.auth_rules ? api.auth_rules : null;
 
         // Dynamically load all API modules
         const mods = fs.readdirSync(path.resolve(__dirname, './lib/'));

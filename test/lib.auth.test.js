@@ -16,7 +16,7 @@ test('lib.auth.test.js', (t) => {
         url: 'http://localhost:7777'
     });
 
-    hecate.auth(null, (err, res) => {
+    hecate.auth.get(null, (err, res) => {
         t.error(err, 'no error');
 
         t.deepEquals(res, { custom: 'auth' }, 'returns custom auth json');
