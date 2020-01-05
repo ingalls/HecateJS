@@ -81,7 +81,7 @@ test('Clean revert of single delta', (t) => {
         t.end();
     });
 
-    hecate._.revert.deltas({
+    hecate.revert.deltas({
         output: results,
         start: 2,
         end: 2
@@ -222,7 +222,7 @@ test('Clean revert of multiple deltas', (t) => {
         t.end();
     });
 
-    hecate._.revert.deltas({
+    hecate.revert.deltas({
         output: results,
         start: 2,
         end: 3
@@ -320,7 +320,7 @@ test('Failed revert as feature exists multiple times across detlas', (t) => {
             }
         }]);
 
-    hecate._.revert.deltas({
+    hecate.revert.deltas({
         output: new PassThrough(),
         start: 2,
         end: 3
@@ -378,7 +378,7 @@ test('Failed revert as feature has been edited since desired revert', (t) => {
             }
         }]);
 
-    hecate._.revert.deltas({
+    hecate.revert.deltas({
         output: new PassThrough(),
         start: 2,
         end: 2
