@@ -15,7 +15,7 @@ test('lib.deltas.test.js', (t) => {
         .reply(200, true);
 
     t.test('lib.deltas.test.js - default', (q) => {
-        hecate.listDeltas({}, (err, res) => {
+        hecate.deltas.list({}, (err, res) => {
             q.error(err, 'no errors');
             q.equals(res, true);
             q.end();
@@ -27,7 +27,7 @@ test('lib.deltas.test.js', (t) => {
         .reply(200, true);
 
     t.test('lib.deltas.test.js - custom limit', (q) => {
-        hecate.listDeltas({
+        hecate.deltas.list({
             limit: 1
         }, (err, res) => {
             q.error(err, 'no errors');
@@ -41,7 +41,7 @@ test('lib.deltas.test.js', (t) => {
         .reply(200, true);
 
     t.test('lib.deltas.test.js - custom offset', (q) => {
-        hecate.listDeltas({
+        hecate.deltas.list({
             limit: 1,
             offset: 1
         }, (err, res) => {

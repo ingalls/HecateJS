@@ -14,7 +14,7 @@ test('lib.feature.test.js', (t) => {
         .get('/api/data/feature/7/history')
         .reply(200, true);
 
-    hecate.getFeatureHistory({
+    hecate.feature.history({
         feature: 7
     }, (err, res) => {
         t.error(err);

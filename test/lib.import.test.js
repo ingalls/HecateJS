@@ -19,13 +19,13 @@ test('Basic Import Test', (t) => {
                     max_size: 20971520
                 }
             },
-            version: "0.82.1"
+            version: '0.82.1'
         })
         .get('/api/schema').reply(200,
             JSON.parse(fs.readFileSync(path.resolve(__dirname, './fixtures/valid-geojson.schema')))
         );
 
-    hecate._.import.multi({
+    hecate.import.multi({
         input: fs.createReadStream(path.resolve(__dirname, './fixtures/valid-geojson.json')),
         message: 'Test Import',
         dryrun: true
